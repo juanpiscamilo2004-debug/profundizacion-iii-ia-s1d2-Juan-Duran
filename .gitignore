@@ -1,0 +1,10 @@
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Generated numerical exports (keep the directory in Git).
+results/*
+!results/.gitkeep

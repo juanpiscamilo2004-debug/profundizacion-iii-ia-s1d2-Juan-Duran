@@ -138,9 +138,43 @@ Se activa si el centro está a una distancia horizontal de hasta un radio de `x 
 6. Construir en `visualization.py` las gráficas de series y después la escena 3D/animación.
 7. Ejecutar una comparación contra resultados exportados desde MATLAB y resolver las pendientes de `pitch`, unidades y tolerancias antes de cualquier mejora física.
 
-## Pendientes de verificación con MATLAB
+## Verificación realizada con MATLAB
 
-- El valor intencional de `pitch` (`23` frente a `23.5`).
-- Las unidades coherentes y la escala numérica real de las fuerzas y del torque.
-- Una trayectoria de referencia exportada para establecer tolerancias cuantitativas.
-- Si el primer impacto con la red/mesa y cualquier reactivación de colisión concuerdan con la ejecución del Live Script en la versión de MATLAB objetivo.
+La ejecución del Live Script original `legacy/TableTennisTests.mlx` fue realizada
+en MATLAB y se utilizó como referencia para validar la migración a Python.
+
+Se verificó que:
+
+- MATLAB genera 301 muestras para `dt = 0.005` y una duración de 1.5 s.
+- La simulación Python genera las mismas 301 muestras.
+- Se exportaron los resultados de MATLAB a `matlab_results.csv`.
+- Se comparó el estado final de MATLAB con `results/simulation_results.csv`.
+- Las posiciones, velocidades, aceleraciones, ángulos, velocidades angulares y
+  aceleraciones angulares finales coinciden dentro de la precisión numérica de
+  punto flotante.
+- Python registra 2 colisiones con la mesa y 0 colisiones con la red, de acuerdo
+  con la ejecución de referencia utilizada.
+- La ejecución del Live Script MATLAB con `pitch = 23,5` se realizó correctamente.
+
+Las diferencias mínimas observadas entre MATLAB y Python corresponden a la
+precisión de las operaciones numéricas y no implican una modificación del
+algoritmo físico original.
+
+Las unidades y constantes del modelo se conservan tal como aparecen en el
+código MATLAB original. No se realizaron correcciones físicas ni conversiones
+de unidades con el objetivo de preservar la equivalencia numérica durante esta
+primera migración.
+
+## Estado de la migración
+
+La primera migración funcional de MATLAB a Python queda validada mediante:
+
+- pruebas automatizadas de parámetros, física, simulación, visualización y
+  equivalencia numérica;
+- ejecución completa de la simulación Python;
+- exportación reproducible de resultados a CSV;
+- comparación con resultados obtenidos directamente desde MATLAB;
+- visualización estática y animación 3D opcionales.
+
+Las posibles mejoras físicas del modelo original quedan fuera del alcance de
+esta primera migración.

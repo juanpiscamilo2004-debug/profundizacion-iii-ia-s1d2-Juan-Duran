@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.animation import Animation, FuncAnimation
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401: registra la proyeccion 3D.
@@ -151,6 +152,75 @@ def plot_trajectory(
     axis.view_init(elev=parameters.pitch, azim=parameters.yaw)
     axis.legend()
     return figure, axis
+
+
+def animate_trajectory(
+    result: SimulationResult,
+    parameters: TableTennisParameters,
+    interval: int = 50,
+    show_vectors: bool = True,
+) -> tuple[Animation, Figure, Axes]:
+    """Anima una trayectoria ya calculada sin ejecutar ni alterar la simulación.
+
+    Los fotogramas se separan conforme a ``parameters.plot_period``. Los
+    vectores se normalizan solo para presentación, debido a la escala numérica
+    heredada del modelo.
+    """
+    if interval <= 0:
+        raise ValueError("interval must be positive")
+    frame_indices = np.arange(0, result.time.size, parameters.plot_period, dtype=int)
+    if frame_indices[-1] != result.time.size - 1:
+        frame_indices = np.append(frame_indices, result.time.size - 1)
+
+    figure = plt.figure(figsize=(11, 8), layout="constrained")
+    axis = figure.add_subplot(111, projection="3d")
+    _draw_table(axis, parameters)
+    _draw_net(axis, parameters)
+    _set_scene_limits(axis, result, parameters)
+    axis.set_xlabel("x (mm)")
+    axis.set_ylabel("y (mm)")
+    axis.set_zlabel("z (mm)")
+    axis.set_title("Animación 3D de la trayectoria")
+    axis.view_init(elev=parameters.pitch, azim=parameters.yaw)
+
+    travelled_path, = axis.plot([], [], [], color="tab:blue", linewidth=2, label="Trayectoria")
+    ball, = axis.plot([], [], [], marker="o", color="tab:orange", markersize=8, label="Pelota")
+    time_label = axis.text2D(0.02, 0.95, "", transform=axis.transAxes)
+    vector_artists: list[object] = []
+    axis.legend()
+
+    def scaled_direction(values: np.ndarray) -> np.ndarray:
+        norm = float(np.linalg.norm(values))
+        return np.zeros(3) if norm == 0.0 else values / norm * (4.0 * parameters.ball_radius)
+
+    def update(frame_number: int) -> tuple[object, ...]:
+        index = frame_indices[frame_number]
+        center = result.position[:, index]
+        travelled_path.set_data(result.position[0, : index + 1], result.position[1, : index + 1])
+        travelled_path.set_3d_properties(result.position[2, : index + 1])
+        ball.set_data([center[0]], [center[1]])
+        ball.set_3d_properties([center[2]])
+        time_label.set_text(f"t = {result.time[index]:.3f} s")
+        for artist in vector_artists:
+            artist.remove()
+        vector_artists.clear()
+        if show_vectors:
+            for values, color in (
+                (result.velocity[:, index], "tab:red"),
+                (result.acceleration[:, index], "tab:purple"),
+                (result.angular_velocity[:, index], "tab:brown"),
+            ):
+                direction = scaled_direction(values)
+                if np.any(direction):
+                    vector_artists.append(
+                        axis.quiver(*center, *direction, color=color, arrow_length_ratio=0.2)
+                    )
+        return travelled_path, ball, time_label, *vector_artists
+
+    animation = FuncAnimation(
+        figure, update, frames=len(frame_indices), interval=interval, blit=False, repeat=False
+    )
+    return animation, figure, axis
 
 
 def plot_simulation(
