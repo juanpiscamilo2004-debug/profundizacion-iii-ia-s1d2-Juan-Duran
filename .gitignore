@@ -8,3 +8,6 @@ venv/
 # Generated numerical exports (keep the directory in Git).
 results/*
 !results/.gitkeep
+.ipynb_checkpoints/
+# Jupyter checkpoints
+.ipynb_checkpoints/

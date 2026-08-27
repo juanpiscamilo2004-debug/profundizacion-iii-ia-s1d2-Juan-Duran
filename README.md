@@ -1,49 +1,51 @@
-# Migración de simulación de tenis de mesa: MATLAB → Python
+# Migraci�n de simulaci�n de tenis de mesa: MATLAB ? Python
 
-## Descripción
+## Prop�sito
 
-Este proyecto corresponde a la migración de una simulación de tenis de mesa originalmente desarrollada en MATLAB hacia Python.
+Este proyecto corresponde a la migraci�n de una simulaci�n de tenis de mesa originalmente desarrollada en MATLAB hacia Python.
 
-La simulación modela el movimiento traslacional y rotacional de una pelota de tenis de mesa, considerando:
+El archivo original legacy/TableTennisTests.mlx se conserva como referencia. La implementaci�n Python separa el modelo f�sico, la simulaci�n, la visualizaci�n, la exportaci�n de resultados y las pruebas automatizadas.
+
+La simulaci�n considera:
 
 - gravedad;
-- resistencia aerodinámica;
+- resistencia aerodin�mica;
 - efecto Magnus;
 - resistencia rotacional;
 - rebotes sobre la mesa;
 - colisiones con la red;
-- posición, velocidad y aceleración;
-- orientación, velocidad angular y aceleración angular;
-- visualización 3D de la trayectoria.
-
-La implementación Python conserva el orden y el comportamiento numérico del algoritmo original.
+- posici�n, velocidad y aceleraci�n;
+- orientaci�n, velocidad angular y aceleraci�n angular;
+- visualizaci�n 3D.
 
 ## Estructura del proyecto
 
-```text
+`	ext
 .
-├── legacy/
-│   └── TableTennisTests.mlx
-├── src/
-│   └── table_tennis_sim/
-│       ├── __init__.py
-│       ├── parameters.py
-│       ├── physics.py
-│       ├── simulation.py
-│       ├── visualization.py
-│       ├── io.py
-│       └── main.py
-├── tests/
-│   ├── test_parameters.py
-│   ├── test_physics.py
-│   ├── test_simulation.py
-│   ├── test_visualization.py
-│   └── test_matlab_equivalence.py
-├── results/
-│   └── .gitkeep
-├── docs/
-│   └── plan_migracion.md
-├── .gitignore
-├── requirements.txt
-├── bitacora_ia.md
-└── README.md
++-- legacy/
+�   +-- TableTennisTests.mlx
++-- src/
+�   +-- table_tennis_sim/
+�       +-- __init__.py
+�       +-- parameters.py
+�       +-- physics.py
+�       +-- simulation.py
+�       +-- visualization.py
+�       +-- io.py
+�       +-- main.py
++-- tests/
+�   +-- test_parameters.py
+�   +-- test_physics.py
+�   +-- test_simulation.py
+�   +-- test_visualization.py
+�   +-- test_matlab_equivalence.py
++-- notebooks/
+�   +-- 01_simulacion_interactiva.ipynb
++-- results/
+�   +-- .gitkeep
++-- docs/
+�   +-- plan_migracion.md
++-- .gitignore
++-- requirements.txt
++-- bitacora_ia.md
++-- README.md
